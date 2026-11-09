@@ -74,3 +74,9 @@ create index if not exists idx_articulos_categoria
 alter table contabilidad.articulos enable row level security;
 revoke all on table contabilidad.articulos from anon, authenticated;
 grant select, insert, update, delete on table contabilidad.articulos to service_role;
+
+-- ===== API (PostgREST) =====
+-- Para que las llaves (publishable/secret) puedan llegar a estos schemas vía API,
+-- deben estar expuestos en PostgREST (equivalente a Settings > API > Exposed schemas):
+alter role authenticator set pgrst.db_schemas = 'public, graphql_public, catalogos, contabilidad';
+notify pgrst, 'reload schema';

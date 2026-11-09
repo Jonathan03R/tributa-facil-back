@@ -18,7 +18,7 @@ async function obtenerArticulo(slug, { esAdmin }) {
 
 async function guardarArticulo(a) {
   if (!repo.conBD) {
-    const err = new Error('Modo archivos: configura SUPABASE_DB_URL para insertar en la BD');
+    const err = new Error('Modo archivos: configura las llaves de Supabase (SUPABASE_URL + SUPABASE_SECRET_KEY) para insertar en la BD');
     err.status = 501;
     throw err;
   }

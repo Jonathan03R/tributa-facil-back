@@ -41,9 +41,9 @@ service_role / la conexión Postgres del servidor. La web nunca toca la BD direc
 
 ## Puesta en marcha
 1. Proyecto en Supabase + correr `db/esquema.sql`.
-2. Copia `.env.example` a `.env`: `SUPABASE_DB_URL` (pooler Postgres) y `API_KEY_INTERNA`.
+2. Copia `.env.example` a `.env`: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` (API de Supabase, sin cadena de conexión) y `API_KEY_INTERNA`.
 3. `npm install` y `npm start` → http://127.0.0.1:3010
 4. Subir los artículos ya escritos: con el servidor corriendo, `npm run importar`.
 
-Sin `SUPABASE_DB_URL` el servidor arranca en **modo archivos** (solo lectura
+Sin llaves de Supabase el servidor arranca en **modo archivos** (solo lectura
 desde ../articulos/*.json), útil para probar los GET sin BD.
