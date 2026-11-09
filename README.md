@@ -1,6 +1,29 @@
-# Servidor de artículos (Node.js + Supabase)
+# Tributa Fácil — Backend de artículos (Node.js + Supabase)
 
 Flujo: **Muse escribe el artículo → POST /articulos (con clave interna) → Supabase (Postgres) → la web Astro lee con GET**.
+
+## Arquitectura (misma organización que backend_sunaap)
+
+```
+src/
+  server.js               Entrada: solo levanta la app
+  app.js                  Crea Express y monta todo
+  app-module-routes.js    Monta las rutas de los módulos
+  core/
+    config/env.js         Único lugar que lee el .env
+    infraestructura/db.js Pool de conexión a Supabase (pg)
+    middlewares/          api-key.js (protege escritura y borradores)
+  modules/
+    articulos/
+      articulos.routes.js     GET /, GET /:slug, POST /
+      controllers/            HTTP <-> servicio (sin lógica ni SQL)
+      services/               Reglas de negocio
+      repositories/           Único acceso a datos (SQL o archivos)
+      schemas/                Contrato del artículo y validación
+db/esquema.sql            Esquema Supabase (estilo Esquema Roque)
+scripts/importar-articulos.js  Importador que usa Muse (POST vía el servidor)
+docs/PARAMETROS-WEB.md    Contrato de parámetros que consume la web
+```
 
 ## Endpoints
 | Método | Ruta | Quién | Qué devuelve |
@@ -17,11 +40,10 @@ con FK al catálogo `catalogos.categorias`, RLS activado y acceso solo para
 service_role / la conexión Postgres del servidor. La web nunca toca la BD directo.
 
 ## Puesta en marcha
-1. Crea el proyecto gratuito en Supabase y corre `db/esquema.sql`.
-2. Copia `.env.example` a `.env`: pega `SUPABASE_DB_URL` (Supabase > Database >
-   Connection string) y define `API_KEY_INTERNA`.
+1. Proyecto en Supabase + correr `db/esquema.sql`.
+2. Copia `.env.example` a `.env`: `SUPABASE_DB_URL` (pooler Postgres) y `API_KEY_INTERNA`.
 3. `npm install` y `npm start` → http://127.0.0.1:3010
-4. Para subir los artículos ya escritos: con el servidor corriendo, `npm run importar`.
+4. Subir los artículos ya escritos: con el servidor corriendo, `npm run importar`.
 
 Sin `SUPABASE_DB_URL` el servidor arranca en **modo archivos** (solo lectura
-desde ../articulos/*.json), útil para probar los GET antes de conectar Supabase.
+desde ../articulos/*.json), útil para probar los GET sin BD.
