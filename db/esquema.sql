@@ -75,6 +75,11 @@ alter table contabilidad.articulos enable row level security;
 revoke all on table contabilidad.articulos from anon, authenticated;
 grant select, insert, update, delete on table contabilidad.articulos to service_role;
 
+-- Las secuencias de los IDs (bigserial) también necesitan permiso: sin esto,
+-- los INSERT nuevos fallan con "permission denied for sequence".
+grant usage, select on all sequences in schema catalogos to service_role;
+grant usage, select on all sequences in schema contabilidad to service_role;
+
 -- ===== API (PostgREST) =====
 -- Para que las llaves (publishable/secret) puedan llegar a estos schemas vía API,
 -- deben estar expuestos en PostgREST (equivalente a Settings > API > Exposed schemas):
