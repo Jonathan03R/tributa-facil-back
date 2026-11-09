@@ -3,7 +3,7 @@ require('dotenv').config();
 const path = require('path');
 
 module.exports = {
-  puerto: process.env.PUERTO || 3010,
+  puerto: process.env.PORT || process.env.PUERTO || 3010, // Render asigna PORT; PUERTO es el local
   apiKeyInterna: process.env.API_KEY_INTERNA || '',
   // Supabase SOLO por API (llaves) — prohibido usar cadena de conexión Postgres.
   supabaseUrl: process.env.SUPABASE_URL || '',
