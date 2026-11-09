@@ -2,10 +2,18 @@
 const repo = require('../repositories/articulos.repository');
 const { aPublico, validarArticulo } = require('../schemas/articulo.schema');
 
-async function listarArticulos({ esAdmin, incluirBorradores, categoria, buscar }) {
+async function listarArticulos({ esAdmin, incluirBorradores, categoria, buscar, pagina, limite }) {
   const filas = await repo.listar({ incluirBorradores: esAdmin && incluirBorradores, categoria, buscar });
   // En modo archivos (respaldo local) se devuelve todo; con BD el repositorio ya filtró por estado.
-  return filas.map((f) => aPublico(f, false));
+  const todos = filas.map((f) => aPublico(f, false));
+  // Paginación OPCIONAL: sin ?pagina ni ?limite se devuelve la lista completa
+  // (comportamiento histórico que el build de la web espera). Con parámetros,
+  // se corta la lista y el controlador informa el total en cabeceras X-*.
+  if (pagina == null && limite == null) return { datos: todos, total: todos.length, paginado: false };
+  const lim = Math.min(100, Math.max(1, Number.parseInt(limite, 10) || 20));
+  const pag = Math.max(1, Number.parseInt(pagina, 10) || 1);
+  const desde = (pag - 1) * lim;
+  return { datos: todos.slice(desde, desde + lim), total: todos.length, paginado: true, pagina: pag, limite: lim, paginas: Math.max(1, Math.ceil(todos.length / lim)) };
 }
 
 async function obtenerArticulo(slug, { esAdmin }) {

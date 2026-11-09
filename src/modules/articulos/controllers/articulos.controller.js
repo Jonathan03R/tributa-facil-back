@@ -4,13 +4,20 @@ const { esAdmin, requerirApiKey } = require('../../../core/middlewares/api-key')
 
 async function listar(req, res) {
   try {
-    const datos = await service.listarArticulos({
+    const r = await service.listarArticulos({
       esAdmin: esAdmin(req),
       incluirBorradores: req.query.incluir_borradores === 'true',
       categoria: req.query.categoria || null,
       buscar: req.query.buscar || req.query.q || null,
+      pagina: req.query.pagina ?? null,
+      limite: req.query.limite ?? null,
     });
-    res.json(datos);
+    // El cuerpo sigue siendo un arreglo (contrato con el front); la
+    // paginación se informa en cabeceras cuando se pide.
+    if (r.paginado) {
+      res.set({ 'X-Total': r.total, 'X-Pagina': r.pagina, 'X-Limite': r.limite, 'X-Paginas': r.paginas });
+    }
+    res.json(r.datos);
   } catch (e) { res.status(e.status || 500).json({ error: e.message }); }
 }
 
