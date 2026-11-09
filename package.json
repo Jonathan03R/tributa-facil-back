@@ -1,0 +1,16 @@
+{
+  "name": "servidor-articulos",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Servidor Node.js de artículos de contabilidad: guarda en Supabase (Postgres) y sirve endpoints para que la web Astro los lea.",
+  "scripts": {
+    "start": "node src/servidor.js",
+    "importar": "node src/importar.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.12.0"
+  }
+}
