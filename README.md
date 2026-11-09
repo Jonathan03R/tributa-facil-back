@@ -31,6 +31,8 @@ docs/PARAMETROS-WEB.md    Contrato de parámetros que consume la web
 | GET | /salud | público | { estado, modo } |
 | GET | /articulos | web Astro | Lista sin contenido (solo PUBLICADO; con x-api-key e ?incluir_borradores=true también borradores) |
 | GET | /articulos/:slug | web Astro | Artículo completo con contenido_markdown |
+| GET | /categorias | web Astro | Catálogo de categorías con total de publicados por categoría |
+| GET | /articulos?categoria=SUNAT | web Astro | Lista filtrada por categoría |
 | POST | /articulos | Muse/importador | Inserta o actualiza por slug. Exige header `x-api-key` |
 
 ## Base de datos (Supabase, estilo Esquema Roque)

@@ -2,8 +2,8 @@
 const repo = require('../repositories/articulos.repository');
 const { aPublico, validarArticulo } = require('../schemas/articulo.schema');
 
-async function listarArticulos({ esAdmin, incluirBorradores }) {
-  const filas = await repo.listar({ incluirBorradores: esAdmin && incluirBorradores });
+async function listarArticulos({ esAdmin, incluirBorradores, categoria }) {
+  const filas = await repo.listar({ incluirBorradores: esAdmin && incluirBorradores, categoria });
   // En modo archivos (respaldo local) se devuelve todo; con BD el repositorio ya filtró por estado.
   return filas.map((f) => aPublico(f, false));
 }

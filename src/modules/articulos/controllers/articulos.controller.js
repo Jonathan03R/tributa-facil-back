@@ -7,6 +7,7 @@ async function listar(req, res) {
     const datos = await service.listarArticulos({
       esAdmin: esAdmin(req),
       incluirBorradores: req.query.incluir_borradores === 'true',
+      categoria: req.query.categoria || null,
     });
     res.json(datos);
   } catch (e) { res.status(e.status || 500).json({ error: e.message }); }

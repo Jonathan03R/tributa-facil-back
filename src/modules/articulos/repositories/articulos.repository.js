@@ -23,8 +23,11 @@ async function mapaCategorias() {
 
 const conCategoria = (fila, mapa) => ({ ...fila, categoria_codigo: mapa.get(String(fila.categoria_id)) || null });
 
-async function listar({ incluirBorradores }) {
-  if (!conBD) return leerDesdeArchivos();
+async function listar({ incluirBorradores, categoria }) {
+  if (!conBD) {
+    const todos = leerDesdeArchivos();
+    return categoria ? todos.filter((a) => String(a.categoria || '').toUpperCase() === categoria.toUpperCase()) : todos;
+  }
   let q = dbArticulos().select('*').eq('activo', true)
     .order('articulo_fecha_publicacion', { ascending: false })
     .order('articulo_id', { ascending: false });
@@ -32,7 +35,8 @@ async function listar({ incluirBorradores }) {
   const { data, error } = await q;
   if (error) throw new Error(error.message);
   const mapa = await mapaCategorias();
-  return (data || []).map((f) => conCategoria(f, mapa));
+  const filas = (data || []).map((f) => conCategoria(f, mapa));
+  return categoria ? filas.filter((f) => (f.categoria_codigo || '').toUpperCase() === categoria.toUpperCase()) : filas;
 }
 
 async function obtenerPorSlug(slug) {
