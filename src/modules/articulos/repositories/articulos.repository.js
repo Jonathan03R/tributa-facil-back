@@ -43,19 +43,25 @@ async function guardar(a) {
     `insert into contabilidad.articulos
      (categoria_id, articulo_titulo, articulo_slug, articulo_descripcion, articulo_resumen, articulo_etiquetas,
       articulo_palabra_clave, articulo_fecha_publicacion, articulo_autor, articulo_fuente_nombre, articulo_fuente_url,
-      articulo_norma_relacionada, articulo_vigencia, articulo_tiempo_lectura_min, articulo_estado, articulo_contenido_markdown)
-     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+      articulo_norma_relacionada, articulo_vigencia, articulo_tiempo_lectura_min, articulo_estado, articulo_contenido_markdown,
+      articulo_h1, articulo_imagen_url, articulo_imagen_alt, articulo_imagen_credito, articulo_palabras_clave_secundarias)
+     values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
      on conflict (articulo_slug) where activo = true do update set
       categoria_id = excluded.categoria_id, articulo_titulo = excluded.articulo_titulo,
       articulo_descripcion = excluded.articulo_descripcion, articulo_resumen = excluded.articulo_resumen,
       articulo_etiquetas = excluded.articulo_etiquetas, articulo_contenido_markdown = excluded.articulo_contenido_markdown,
+      articulo_h1 = excluded.articulo_h1, articulo_imagen_url = excluded.articulo_imagen_url,
+      articulo_imagen_alt = excluded.articulo_imagen_alt, articulo_imagen_credito = excluded.articulo_imagen_credito,
+      articulo_palabras_clave_secundarias = excluded.articulo_palabras_clave_secundarias,
       articulo_estado = excluded.articulo_estado, fecha_actualizacion = now()
      returning articulo_id, articulo_slug, articulo_estado`,
     [cat.rows[0].categoria_id, a.titulo, a.slug, a.descripcion || null, a.resumen || null, a.etiquetas || [],
      a.palabra_clave || null, a.fecha_publicacion || new Date().toISOString().slice(0, 10),
      a.autor || 'Jonathan Roque', a.fuente_nombre || null, a.fuente_url || null,
      a.norma_relacionada || null, a.vigencia || null, a.tiempo_lectura_min || 4,
-     (a.estado || 'borrador').toUpperCase(), a.contenido_markdown]);
+     (a.estado || 'borrador').toUpperCase(), a.contenido_markdown,
+     a.h1 || null, a.imagen_url || null, a.imagen_alt || null, a.imagen_credito || null,
+     JSON.stringify(a.palabras_clave_secundarias || [])]);
   return rows[0];
 }
 

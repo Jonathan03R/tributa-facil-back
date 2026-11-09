@@ -15,12 +15,17 @@ function validarArticulo(a) {
 function aPublico(r, incluirContenido = true) {
   const pub = {
     titulo: r.articulo_titulo || r.titulo,
+    h1: r.articulo_h1 || r.h1 || null,
+    imagen_url: r.articulo_imagen_url || r.imagen_url || null,
+    imagen_alt: r.articulo_imagen_alt || r.imagen_alt || null,
+    imagen_credito: r.articulo_imagen_credito || r.imagen_credito || null,
     slug: r.articulo_slug || r.slug,
     descripcion: r.articulo_descripcion || r.descripcion,
     resumen: r.articulo_resumen || r.resumen,
     categoria: r.categoria_codigo || r.categoria,
     etiquetas: r.articulo_etiquetas || r.etiquetas || [],
     palabra_clave: r.articulo_palabra_clave || r.palabra_clave,
+    palabras_clave_secundarias: r.articulo_palabras_clave_secundarias || r.palabras_clave_secundarias || [],
     fecha_publicacion: r.articulo_fecha_publicacion || r.fecha_publicacion,
     autor: r.articulo_autor || r.autor,
     fuente_nombre: r.articulo_fuente_nombre || r.fuente_nombre,
