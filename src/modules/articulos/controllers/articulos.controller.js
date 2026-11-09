@@ -8,6 +8,7 @@ async function listar(req, res) {
       esAdmin: esAdmin(req),
       incluirBorradores: req.query.incluir_borradores === 'true',
       categoria: req.query.categoria || null,
+      buscar: req.query.buscar || req.query.q || null,
     });
     res.json(datos);
   } catch (e) { res.status(e.status || 500).json({ error: e.message }); }

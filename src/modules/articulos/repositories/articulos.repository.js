@@ -23,10 +23,20 @@ async function mapaCategorias() {
 
 const conCategoria = (fila, mapa) => ({ ...fila, categoria_codigo: mapa.get(String(fila.categoria_id)) || null });
 
-async function listar({ incluirBorradores, categoria }) {
+const coincideBusqueda = (a, texto) => {
+  const t = texto.toLowerCase();
+  const campos = [a.titulo, a.slug, a.palabra_clave, a.descripcion, a.h1,
+    ...(a.palabras_clave_secundarias || []), ...(a.etiquetas || [])]
+    .filter(Boolean).join(' ').toLowerCase();
+  return campos.includes(t);
+};
+
+async function listar({ incluirBorradores, categoria, buscar }) {
   if (!conBD) {
     const todos = leerDesdeArchivos();
-    return categoria ? todos.filter((a) => String(a.categoria || '').toUpperCase() === categoria.toUpperCase()) : todos;
+    let salida = categoria ? todos.filter((a) => String(a.categoria || '').toUpperCase() === categoria.toUpperCase()) : todos;
+    if (buscar) salida = salida.filter((a) => coincideBusqueda(a, buscar));
+    return salida;
   }
   let q = dbArticulos().select('*').eq('activo', true)
     .order('articulo_fecha_publicacion', { ascending: false })
@@ -36,7 +46,17 @@ async function listar({ incluirBorradores, categoria }) {
   if (error) throw new Error(error.message);
   const mapa = await mapaCategorias();
   const filas = (data || []).map((f) => conCategoria(f, mapa));
-  return categoria ? filas.filter((f) => (f.categoria_codigo || '').toUpperCase() === categoria.toUpperCase()) : filas;
+  let salida = categoria ? filas.filter((f) => (f.categoria_codigo || '').toUpperCase() === categoria.toUpperCase()) : filas;
+  if (buscar) {
+    const crudos = new Map(salida.map((f) => [f.slug || f.articulo_slug, f]));
+    salida = salida.filter((f) => coincideBusqueda({
+      titulo: f.articulo_titulo, slug: f.articulo_slug, palabra_clave: f.articulo_palabra_clave,
+      descripcion: f.articulo_descripcion, h1: f.articulo_h1,
+      palabras_clave_secundarias: f.articulo_palabras_clave_secundarias, etiquetas: f.articulo_etiquetas,
+    }, buscar));
+    void crudos;
+  }
+  return salida;
 }
 
 async function obtenerPorSlug(slug) {
