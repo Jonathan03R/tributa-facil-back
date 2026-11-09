@@ -1,0 +1,18 @@
+# Blueprint de Render para el backend de artículos (igual que en backend_sunaap).
+services:
+  - type: web
+    name: tributa-facil-back
+    env: node
+    region: ohio
+    branch: main
+    buildCommand: npm install
+    startCommand: npm run start
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: API_KEY_INTERNA
+        sync: false
