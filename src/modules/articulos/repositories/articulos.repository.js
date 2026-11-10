@@ -104,11 +104,28 @@ async function guardar(a) {
     .eq('activo', true).eq('articulo_slug', a.slug).limit(1).maybeSingle();
 
   const cols = 'articulo_id, articulo_slug, articulo_estado';
-  const res = previa
-    ? await dbArticulos().update(fila).eq('articulo_id', previa.articulo_id).select(cols).single()
-    : await dbArticulos().insert(fila).select(cols).single();
-  if (res.error) throw new Error(res.error.message);
-  return res.data;
+  if (previa) {
+    const res = await dbArticulos().update(fila).eq('articulo_id', previa.articulo_id).select(cols).single();
+    if (res.error) throw new Error(res.error.message);
+    return res.data;
+  }
+
+  // Inserción automática SIN depender de la secuencia de la BD: la llave secreta
+  // no tiene permiso sobre articulos_articulo_id_seq (falla con "permission denied
+  // for sequence"), así que asignamos el id explícitamente (máximo actual + 1).
+  // Al venir el id en la fila, Postgres no llama a la secuencia y el alta funciona
+  // solo con las llaves de la API, sin pasos manuales en Supabase.
+  for (let intento = 0; intento < 5; intento++) {
+    const { data: tope, error: eTope } = await dbArticulos().select('articulo_id')
+      .order('articulo_id', { ascending: false }).limit(1).maybeSingle();
+    if (eTope) throw new Error(eTope.message);
+    const nuevoId = (tope ? Number(tope.articulo_id) : 0) + 1 + intento;
+    const res = await dbArticulos().insert({ ...fila, articulo_id: nuevoId }).select(cols).single();
+    if (!res.error) return res.data;
+    // Solo reintenta si otro alta simultánea tomó ese id (choque de clave primaria).
+    if (!/duplicate key|already exists/i.test(res.error.message)) throw new Error(res.error.message);
+  }
+  throw new Error('No se pudo asignar un id libre para el artículo tras varios intentos');
 }
 
 module.exports = { listar, obtenerPorSlug, guardar, conBD };
