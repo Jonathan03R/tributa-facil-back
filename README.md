@@ -1,3 +1,15 @@
+# ⚠️ OBSOLETO — Este backend ya no se usa (desde el 2026-11-16)
+
+Por decisión de Jona, Tributa Bien eliminó este intermediario:
+
+- **La web lee directo de Supabase**: vistas públicas `public.articulos_web` y `public.categorias_web` (solo artículos PUBLICADO), consultadas con la llave publishable. La web ya no llama a este backend.
+- **La publicación de artículos** la hace la tarea automática horaria directo contra la API REST de Supabase, replicando la validación y la lógica que tenía este servicio (incluida la asignación manual de IDs).
+- El servicio de Render asociado a este repo fue apagado.
+
+Este repositorio queda solo como referencia histórica. No desplegar ni usar sus endpoints: nadie los consume.
+
+---
+
 # Tributa Fácil — Backend de artículos (Node.js + Supabase)
 
 Flujo: **Muse escribe el artículo → POST /articulos (con clave interna) → Supabase (Postgres) → la web Astro lee con GET**.
